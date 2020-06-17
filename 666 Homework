@@ -1,0 +1,231 @@
+import time as t
+import re
+from datetime import date
+
+#Variables
+age = 0
+year = 0
+day = 0
+month = 0
+
+#Date getter works until year 10,000
+# currentYear = int(str(date.today())[0:4])
+# currentMonth = int(str(date.today())[5:7])
+# currentDay = int(str(date.today())[8:10])
+daysInYear = 0
+
+yearConfirmed = False
+monthConfirmed = False
+dayConfirmed = False
+
+months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+daysInMonths = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+regex = re.compile('[abcdefghjiklmnopqrstuvwxyz!.]') # abcdefghjiklmnopqrstuvwxyz!
+
+#Functions
+def SDecider(_value):
+    if(_value > 1):
+        return 's'
+    elif(_value == 1):
+        return ''
+    else:
+        return 's'
+
+def ConfirmResponse(topic, subject, firstResponse, secondResponse):
+    replyIsSuitable = False
+    while(replyIsSuitable != True):
+        reply = input('Do you confirm your ' + str(topic) + ' of ' + str(subject) + ': ').lower()
+        if(firstResponse in reply and secondResponse in reply):
+            print('Please reply with either " '+ firstResponse + '" or "' + secondResponse + '", not BOTH silly')
+        elif(firstResponse not in reply and secondResponse not in reply):
+            print('Please enter "' +firstResponse + '" or "' +secondResponse + '"')
+        else:
+            return reply
+            replyIsSuitable = True
+
+def InputYear():
+    sufficientYear = False
+    while(sufficientYear == False):
+        _year = input('What year were you born in: ')
+        if('.' in _year):
+            print('Please do not use decimal points (enter whole number).')
+        elif (regex.search(_year) == None):
+            if(int(_year) <= 2020):
+                print('Alrighty!')
+                sufficientYear = True
+            else:
+                print('Time travelers are not allowed to use this software, sorry.')
+        else:
+            print('Please enter a number.')
+    return _year
+
+def InputMonth():
+    sufficientMonth = False
+    while(sufficientMonth == False):
+        _month = input('What month were you born in: ').lower()
+        if ('.' in _month):
+            print('Please do not use decimal points (enter whole number).')
+        elif (regex.search(_month) != None):
+            for i in range(12):
+                if(_month == months[i]):
+                    _month = i + 1
+                    sufficientMonth = True
+                    break
+            if(sufficientMonth == False):
+                print('Please enter a number from 1 to 12, or a month (e.g "November").')
+        elif(int(_month) > 0 and int(_month) <= 12):
+            sufficientMonth = True
+        elif(int(_month) < 0):
+            print('Please enter a number above 0.')
+        elif(int(_month) > 12):
+            print('There are only 12 months')
+        else: print('Incorrect Input.')
+
+    return _month
+
+def InputDay():
+    sufficientDay = False
+    while (sufficientDay == False):
+        _day = input('What day were you born on: ')
+        if ('.' in _day):
+            print('Please do not use decimal points (enter whole number).')
+        elif (regex.search(_day) == None):
+            if (int(_day) <= daysInMonths[month - 1]):
+                if(int(_day) > 0):
+                    print('Alrighty!')
+                    sufficientDay = True
+                elif(int(_day) == 0): print('The 0th Month is non-existant.')
+                else: print('Negative days, quite frankly, do not exist.')
+            else:
+                print('Sweetheart, there are only ' + str(daysInMonths[month - 1]) + ' days in ' + months[month - 1])
+        else:
+            print('Please enter a number.')
+    return _day
+
+def CalculateTimeUntilAcceptance(_year, _month, _day, _age):
+    yearsRemaining = 17 - _age
+    if(_month < currentMonth):
+        monthsRemaining = (12 - currentMonth) + _month
+    else:
+        monthsRemaining = _month - currentMonth
+    if(int(_day) < currentDay):
+        monthsRemaining -= 1
+        daysRemaining = (daysInMonths[_month - 1] - currentDay) + int(_day)
+    else:
+        daysRemaining = int(_day) - currentDay
+
+    print('You have ' + str(yearsRemaining) + ' year' + SDecider(yearsRemaining) + ', ' + str(monthsRemaining) + ' month'  + SDecider(monthsRemaining)
+          + ', and ' + str(daysRemaining) + ' day' + SDecider(daysRemaining) + ' remaining until you can join!')
+
+repeatCultEntryTest = True
+
+while(repeatCultEntryTest):
+
+    currentYear = int(str(date.today())[0:4])
+    currentMonth = int(str(date.today())[5:7])
+    currentDay = int(str(date.today())[8:10])
+
+    if((currentYear % 4) == 0):
+        daysInYear = 366
+    else:
+        daysInYear = 365
+
+    #Cult
+    print(' ')
+    print('Todays Date: ')
+    print('Year: ' + str(currentYear) + ', Month: ' + str(currentMonth) + ' (' + str(months[currentMonth - 1]) + ') , Day: ' + str(currentDay))
+    print('There are ' + str(daysInYear) + ' days in this year.')
+    print('There are ' + str(daysInMonths[currentMonth - 1]) + ' days in this month.')
+    t.sleep(0.7)
+    print(' ')
+    print('Hello, and welcome!')
+    t.sleep(0.5)
+
+    #Year Input
+    year = InputYear()
+    while(yearConfirmed == False):
+        if (ConfirmResponse('birth year', year, 'yes', 'no') == 'no'):
+            year = InputYear()
+        else: yearConfirmed = True
+    print('Perfect.')
+    t.sleep(0.5)
+    print(' ')
+
+    #Month Input
+    month = int(InputMonth())
+    while(monthConfirmed == False):
+        if(ConfirmResponse('birth month', str(month) + ' (' + str(months[month - 1]) + ')', 'yes', 'no') == 'no'):
+            month = int(InputMonth())
+        else: monthConfirmed = True
+    print('Splendid.')
+    t.sleep(0.5)
+    print(' ')
+
+    #Day Input
+    day = InputDay()
+    while(dayConfirmed == False):
+        if(ConfirmResponse('day of birth', day, 'yes', 'no') == 'no'):
+            day = InputDay()
+        else: dayConfirmed = True
+
+    #Age Calculation
+    age = currentYear - int(year)
+    if(currentMonth < month):
+        age -= 1
+    elif(month == currentMonth):
+        if(currentDay < int(day)):
+            age -= 1
+
+    print(' ')
+    print('You are ' + str(age) + ' years old.')
+
+    #Cult Acceptance Analysis
+    print(' ')
+    age = int(age)
+    if(age < 18 and age > 6):
+        print('You are underage.')
+        CalculateTimeUntilAcceptance(year, month, day, age)
+    elif(age >= 18 and age < 150):
+        if(age == 42):
+            print('The meaning of life.')
+        elif(age == 69):
+            print('YE YE YE YE YE')
+        print('You are accepted into the cult, please proceed.')
+    elif(age >= 150):
+        if(age == 666):
+            print('You have been accepted.')
+            print('Welcome Satan! >:) lmao lmao lmao')
+        else:
+            print('Your death is near, the cult makes it clear. Elders are not allowed.')
+            print('You should have joined ' + str(age-150) + ' years ago')
+            t.sleep(0.2)
+            print('.')
+            t.sleep(0.2)
+            print('.')
+            t.sleep(0.2)
+            print('.')
+            t.sleep(0.5)
+            print('What a shame, regretful.')
+    elif(age <= 6):
+        print('Child, focus on learning.')
+        CalculateTimeUntilAcceptance(year, month, day, age)
+
+    print(' ')
+
+    i = ConfirmResponse('answer', 'repeating cult entry test', 'yes', 'no')
+    if(i == 'no'):
+        repeatCultEntryTest = False
+        print('')
+        print('Have a good day, thank you.')
+
+
+
+
+
+
+
+
+
+
+
